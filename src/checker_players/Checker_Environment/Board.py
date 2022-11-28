@@ -148,7 +148,7 @@ class Board:
             next2 = self.forward_n_locations(start_loc, 2)
 
         for loc1, loc2 in zip(next1, next2):
-            if self.is_spot(loc1) and self.is_spot(loc2) and self.is_empty(loc2) and self.are_opponents(start_loc, loc2):
+            if self.is_spot(loc1) and self.is_spot(loc2) and self.is_empty(loc2) and self.are_opponents(start_loc, loc1):
                 capture_move = [start_loc, loc2]
                 answer.append(capture_move)
                             
@@ -174,15 +174,15 @@ class Board:
         """
         init_loc = move[0]
         final_loc = move[1]
-        
         if move in self.get_simple_moves(init_loc):
-            self.spots[final_loc[0]][final_loc[1]] = self.spots[init_loc[0]][init_loc[1]]
+            hello = self.get_spot_info(init_loc)
+            self.spots[final_loc[0]][final_loc[1]] = self.get_spot_info(init_loc)
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
             if switch_player_turn:
                 self.player_turn = not self.player_turn
         elif move in self.get_capture_moves(init_loc):
             dist = final_loc[0]-init_loc[0]
-            enemy_piece_loc = [(dist)/2 + init_loc[0], (dist)/2 + init_loc[1]]
+            enemy_piece_loc = [(dist)//2 + init_loc[0], (dist)//2 + init_loc[1]]
             
             self.spots[final_loc[0]][final_loc[1]] = self.spots[init_loc[0]][init_loc[1]]
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
@@ -235,11 +235,11 @@ class Board:
         """
         Prints a string representation of the current game board.
         """
-        norm_line = "|---|---|---|---|---|---|---|---|"
+        norm_line = "|-----|-----|-----|-----|-----|-----|-----|-----|"
         print(norm_line)
         for j in range(self.HEIGHT):
-            row = "| "
+            row = "|  "
             for i in range(self.WIDTH):
-                row = row + self.get_symbol([i, j]) + " | "
+                row = row + self.get_symbol([i, j]) + "  |  "
             print(row)
             print(norm_line)            
