@@ -4,15 +4,19 @@ import random
 class RandomPlayer(Player):
 
     def play(self, board):
-        doubleColumn = DoubleColumnInterpretter.interpret(board)
-        friendly_piece_locs = doubleColumn[self.player_number]
-        random_piece_loc = random.choice(friendly_piece_locs)
-        simple_moves = board.get_simple_moves(random_piece_loc)
-        capture_moves = board.get_capture_moves(random_piece_loc)
-        simple_moves.extend(capture_moves)
+        flat_map = lambda f, xs: [y for ys in xs for y in f(ys)]
+        id = lambda x: x
 
-        random_move = random.choise(simple_moves)
-        board.make_move(random_move)
+        doubleColumn = DoubleColumnInterpretter().interpret(board)
+        friendly_piece_locs = doubleColumn[self.player_number]
+        all_simple_moves = [board.get_simple_moves(piece_loc) for piece_loc in friendly_piece_locs]
+        all_simple_moves = flat_map(id, all_simple_moves)
+
+        all_capture_moves = [board.get_capture_moves(piece_loc) for piece_loc in friendly_piece_locs]
+        all_capture_moves = flat_map(id, all_capture_moves)
+        
+        all_simple_moves.extend(all_capture_moves)
+        return random.choice(all_simple_moves)
 
     # The random player does no learning
     def learn(reward, board):

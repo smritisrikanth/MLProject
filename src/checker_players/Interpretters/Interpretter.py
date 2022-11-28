@@ -1,3 +1,3 @@
 class Interpretter:
-    def interpret(board):
+    def interpret(self, board):
         pass

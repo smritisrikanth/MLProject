@@ -114,7 +114,7 @@ class Board:
             next_locations = self.forward_n_locations(start_loc, 1)
         
 
-        possible_next_locations = [loc for loc in next_locations if self.is_empty(loc)]
+        possible_next_locations = [loc for loc in next_locations if self.is_spot(loc) and self.is_empty(loc)]
             
         return [[start_loc, end_spot] for end_spot in possible_next_locations]   
        
@@ -204,7 +204,6 @@ class Board:
             potential_spots.append(newBoard.spots) 
         return potential_spots
         
-        
     def insert_pieces(self, pieces_info):
         """
         Inserts a set of pieces onto a board.
@@ -214,7 +213,6 @@ class Board:
         for piece_info in pieces_info:
             self.spots[piece_info[0]][piece_info[1]] = piece_info[2]
         
-    
     def get_symbol(self, location):
         """
         Gets the symbol for what should be at a board location.
@@ -229,7 +227,6 @@ class Board:
             return "O"
         else:
             return "X"
-    
     
     def print_board(self):
         """
