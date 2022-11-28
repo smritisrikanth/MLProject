@@ -86,7 +86,7 @@ class Board:
     
     def is_king(self, loc):
         piece = self.spots[loc[0]][loc[1]]
-        return piece == 3 or piece == 3
+        return piece == self.P1_K or piece == self.P2_K
 
     def is_backwards_player(self, loc):
         piece = self.spots[loc[0]][loc[1]]
@@ -175,7 +175,6 @@ class Board:
         init_loc = move[0]
         final_loc = move[1]
         if move in self.get_simple_moves(init_loc):
-            hello = self.get_spot_info(init_loc)
             self.spots[final_loc[0]][final_loc[1]] = self.get_spot_info(init_loc)
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
             if switch_player_turn:
@@ -188,7 +187,7 @@ class Board:
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
             self.spots[enemy_piece_loc[0]][enemy_piece_loc[1]] = self.EMPTY_SPOT
         else:
-            raise Exception("Not a legal move.")
+            raise ValueError("Not a legal move.")
        
     def get_potential_spots_from_moves(self, moves):
         """
