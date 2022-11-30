@@ -1,13 +1,7 @@
 """
--Should store moves as array of locations e.g.: [[x1,y1],[x2,y2],[x3,y3]]
-which is showing the piece at [x1,x2] goes to [x2,y2] then [x3,y3] as one move
--0 is empty spot, 1 is p1, 2 is p2, 3 is p1 king, 4 is p2 king
--if self.player_turn == True then it is player 1's turn
+-Should store moves as array of locations e.g.: [[x1,y1],[x2,y2]]
+if self.player_turn == True then it is player 1's turn
 """
-
-import math
-import copy
-from functools import reduce
 
 class Board:
     """
