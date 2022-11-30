@@ -55,12 +55,15 @@ class Board:
     
     def is_game_over(self):
         """
-        Finds out and returns weather the game currently being played is over or
+        Finds out and returns whether the game currently being played is over or
         not.
         """
-        if not self.get_possible_next_moves():
-            return True
-        return False
+        player1_pieces = [[x,y] for x in range(self.WIDTH) for y in range(self.HEIGHT) if self.get_spot_info([x,y]) in (self.P1, self.P1_K)]
+        player2_pieces = [[x,y] for x in range(self.WIDTH) for y in range(self.HEIGHT) if self.get_spot_info([x,y]) in (self.P2, self.P2_K)]
+
+        possible_moves = self.get_possible_next_moves()
+
+        return not player1_pieces or not player2_pieces or not possible_moves
 
     def is_spot(self, loc):
         """
@@ -163,9 +166,17 @@ class Board:
             for j in range(self.HEIGHT):
                 if (self.player_turn == True and (self.spots[i][j] == self.P1 or self.spots[i][j] == self.P1_K)) or (self.player_turn == False and (self.spots[i][j] == self.P2 or self.spots[i][j] == self.P2_K)):
                     piece_locations.append([i, j])
-        simple_moves = [self.get_simple_moves(loc) for loc in piece_locations]
-        capture_moves = [self.get_capture_moves(loc) for loc in piece_locations]
+        simple_moves = [self.get_simple_moves(loc) for loc in piece_locations if self.get_simple_moves(loc) != []]
+        capture_moves = [self.get_capture_moves(loc) for loc in piece_locations if self.get_capture_moves(loc) != []]
         return simple_moves + capture_moves 
+    
+    def get_kings_row_positions(self, player):
+        if player == self.BACKWARDS_PLAYER:
+            return [[i, 0] for i in range(self.WIDTH)]
+        elif player in (self.P1, self.P2):
+            return [[i, self.HEIGHT-1] for i in range(self.WIDTH)]
+        else:
+            raise ValueError("Not a valid player number. Availible player numbers are: " +str(self.P1)+", "+str(self.P2))
 
     def make_move(self, move, switch_player_turn=True):
         """
@@ -174,21 +185,38 @@ class Board:
         """
         init_loc = move[0]
         final_loc = move[1]
+
+        # Here we are just making sure that the right player is moving their piece
+        if (self.get_spot_info(init_loc) in (self.P1, self.P1_K) and not self.player_turn) or (self.get_spot_info(init_loc) in (self.P2, self.P2_K) and self.player_turn):
+            raise ValueError("Piece of type " + str(self.get_spot_info(init_loc)) + " was attempted to move while Board.switch_player_turn = " + str(self.player_turn))
+
         if move in self.get_simple_moves(init_loc):
             self.spots[final_loc[0]][final_loc[1]] = self.get_spot_info(init_loc)
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
+
+            # Here we are promoting a checker piece if it has reached it's king row
+            if final_loc in self.get_kings_row_positions(self.P1 if self.player_turn else self.P2):
+                self.spots[final_loc[0]][final_loc[1]] = self.P1_K if self.player_turn else self.P2_K
+
             if switch_player_turn:
                 self.player_turn = not self.player_turn
+
         elif move in self.get_capture_moves(init_loc):
-            dist = final_loc[0]-init_loc[0]
-            enemy_piece_loc = [(dist)//2 + init_loc[0], (dist)//2 + init_loc[1]]
+            distx = final_loc[0]-init_loc[0]
+            disty = final_loc[1]-init_loc[1]
+            enemy_piece_loc = [(distx)//2 + init_loc[0], (disty)//2 + init_loc[1]]
             
             self.spots[final_loc[0]][final_loc[1]] = self.spots[init_loc[0]][init_loc[1]]
             self.spots[init_loc[0]][init_loc[1]] = self.EMPTY_SPOT
             self.spots[enemy_piece_loc[0]][enemy_piece_loc[1]] = self.EMPTY_SPOT
+
+            # Here we are promoting a checker piece if it has reached it's king row
+            if final_loc in self.get_kings_row_positions(self.P1 if self.player_turn else self.P2):
+                self.spots[final_loc[0]][final_loc[1]] = self.P1_K if self.player_turn else self.P2_K
+
         else:
             raise ValueError("Not a legal move.")
-       
+
     def get_potential_spots_from_moves(self, moves):
         """
         Get's the potential spots for the board if it makes any of the given moves.
@@ -209,7 +237,7 @@ class Board:
 
         pieces_info is in the form: [[x1, y1, piece1], [x2, y2, piece2], ..., [xn, yn, piecen]]
         """
-        for piece_info in pieces_info:
+        for piece_info in pieces_info:          
             self.spots[piece_info[0]][piece_info[1]] = piece_info[2]
         
     def get_symbol(self, location):
@@ -224,8 +252,10 @@ class Board:
             return "x"
         elif self.spots[location[0]][location[1]] == self.P1_K:
             return "O"
-        else:
+        elif self.spots[location[0]][location[1]] == self.P2_K:
             return "X"
+        else:
+            raise ValueError("Not a valid player number. Availible player numbers are: " +str(self.P1)+", "+str(self.P2))
     
     def print_board(self):
         """
