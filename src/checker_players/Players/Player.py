@@ -2,8 +2,8 @@ class Player:
     def __init__(self, player_number):
         self.player_number = player_number
         
-    def play(board):
+    def play(self, board):
         pass
 
-    def learn(reward, board):
+    def learn(self, reward, board):
         pass

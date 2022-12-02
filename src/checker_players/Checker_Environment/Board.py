@@ -2,6 +2,7 @@
 -Should store moves as array of locations e.g.: [[x1,y1],[x2,y2]]
 if self.player_turn == True then it is player 1's turn
 """
+from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
 
 class Board:
     """
@@ -155,15 +156,14 @@ class Board:
         """
         Gets the possible moves that can be made from the current board configuration.
         """
-        piece_locations = []
-        for i in range(self.WIDTH):
-            for j in range(self.HEIGHT):
-                if (self.player_turn == True and (self.spots[i][j] == self.P1 or self.spots[i][j] == self.P1_K)) or (self.player_turn == False and (self.spots[i][j] == self.P2 or self.spots[i][j] == self.P2_K)):
-                    piece_locations.append([i, j])
-        simple_moves = [self.get_simple_moves(loc) for loc in piece_locations if self.get_simple_moves(loc) != []]
-        capture_moves = [self.get_capture_moves(loc) for loc in piece_locations if self.get_capture_moves(loc) != []]
+        flat_map = lambda xs: [y for ys in xs for y in ys]
+        double_column = DoubleColumnInterpretter().interpret(self)
+        current_pieces = double_column[self.P1 if self.player_turn else self.P2]
+        
+        simple_moves = flat_map([self.get_simple_moves(loc) for loc in current_pieces if self.get_simple_moves(loc) != []])
+        capture_moves = flat_map([self.get_capture_moves(loc) for loc in current_pieces if self.get_capture_moves(loc) != []])
         return simple_moves + capture_moves 
-    
+
     def get_kings_row_positions(self, player):
         if player == self.BACKWARDS_PLAYER:
             return [[i, 0] for i in range(self.WIDTH)]
