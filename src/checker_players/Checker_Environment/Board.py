@@ -3,7 +3,7 @@
 if self.player_turn == True then it is player 1's turn
 """
 from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
-
+import copy
 class Board:
     """
     A class to represent and play an 8x8 game of checkers.
@@ -33,7 +33,7 @@ class Board:
                     elif y>4 and (x+y)%2==1:
                         self.spots[x][y] = self.P2
         else:
-            self.spots = board_state
+            self.spots = copy.deepcopy(board_state)
 
     def reset_board(self):
         """
