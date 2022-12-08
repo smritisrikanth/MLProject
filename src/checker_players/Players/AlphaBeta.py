@@ -1,21 +1,9 @@
-from checker_players.Players.Player import Player
+from checker_players.Players.MinimaxPlayer import MinimaxPlayer
 from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
 from checker_players.Checker_Environment.Board import Board
-from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
 
-class MinimaxPlayer(Player):
-    def __init__(self, player_number, depth_cutoff = 3):
-        super().__init__(player_number)
-        self.depth_cutoff = depth_cutoff
-
-    def evaluate_board(self, board):
-        doubleColumn = DoubleColumnInterpretter().interpret(board)
-        friendly_pieces = doubleColumn[self.player_number]
-        enemy_pieces = doubleColumn[board.P2 if self.player_number == board.P1 else board.P1]
-
-        return len(friendly_pieces) - len(enemy_pieces)
-    
-    def get_best_board_evaluation(self, board, depth_cutoff, max_step = True):
+class AlphaBeta(MinimaxPlayer):    
+    def get_best_board_evaluation(self, board, depth_cutoff, alpha, beta, max_step = True):
         if depth_cutoff == 0:
             return self.evaluate_board(board)
 
@@ -24,13 +12,23 @@ class MinimaxPlayer(Player):
         if len(possible_moves) == 0:
             return self.evaluate_board(board)
 
-        best_child_board_evaluations = []
+        best_value = None
         for move in possible_moves:
             new_board = Board(board.spots, P1_turn= board.player_turn)
             new_board.make_move(move)
-            best_child_board_evaluations.append(self.get_best_board_evaluation(new_board, depth_cutoff-1, max_step = max_step if (new_board.player_turn == board.player_turn) else not max_step))
+            value = self.get_best_board_evaluation(new_board, depth_cutoff-1, alpha, beta, max_step = max_step if (new_board.player_turn == board.player_turn) else not max_step)
+            best_value = value if not best_value else best_value
+            if max_step:
+                best_value = max(best_value, value)
+                alpha = max(alpha, value)
+            else:
+                best_value = min(best_value, value)
+                beta = min(beta, value)
+
+            if alpha >= beta:
+                break
         
-        return max(best_child_board_evaluations) if max_step else min(best_child_board_evaluations)
+        return best_value
 
     def get_best_move(self, board, depth_cutoff):
         '''
@@ -41,6 +39,8 @@ class MinimaxPlayer(Player):
         '''
         best_move = None 
         best_evaluation = float('-inf')
+        alpha = float("-inf")
+        beta = float("inf")
 
         possible_moves = board.get_possible_next_moves()
 
@@ -49,7 +49,7 @@ class MinimaxPlayer(Player):
                 best_move = move
             new_board = Board(board.spots, P1_turn= board.player_turn)
             new_board.make_move(move)
-            curr_evaluation = self.get_best_board_evaluation(new_board, depth_cutoff-1, max_step = (new_board.player_turn == board.player_turn))
+            curr_evaluation = self.get_best_board_evaluation(new_board, depth_cutoff-1, alpha, beta, max_step = (new_board.player_turn == board.player_turn))
             best_move = move if curr_evaluation > best_evaluation else best_move
             best_evaluation = curr_evaluation if curr_evaluation > best_evaluation else best_evaluation
 
