@@ -18,7 +18,7 @@ This folder contains python files related to our reinforcement learning environm
 This folder contains python files which extend `class Interpretter`. Intuitively, the `Interpretter` class is suppose to "re-interpret" a game's state. In the case of checkers, an interpretter would take in an 8 by 8 matrix representing the locations of various pieces on the board, and outputs a the same information under a different structure. This class can largely be thought of as a helper class as different models and reward functions will assume different structures for our game state. As an example, `DoubleColumnInterpretter` maps the 8 by 8 matrix board representation to two lists, where the first contains the positions of all the pieces belonging to player 1, and the second representing the positions of all the pieces belonging to player 2.
 
 ## src/checker_players/Players
-This folder contains files which extend `class Player`. Untuitively, the `Player` class is suppose to be our AI checker players and hence all they have to implement is a `play` and `learn` function.
+This folder contains files which extend `class Player`. Intuitively, the `Player` class is suppose to be our AI checker players and hence all they have to implement is a `play` and `learn` function.
 
 ## src/checker_players/Runners
 TODO: not done writing documentation. However in the meantime, these files should "run" our games. We should be able to run our games, collect metrics, and train our  models.
