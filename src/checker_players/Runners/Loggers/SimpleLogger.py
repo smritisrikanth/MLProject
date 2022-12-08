@@ -27,7 +27,7 @@ class SimpleLogger(Logger):
             # The winner must be P1 if it is P1's turn (hence P1 just ate a piece from P2) but P2 still has
             # available moves (otherwise it would imply that the game ended not because P2 ran out of pieces
             # but because P1 ran out of moves)
-            self.winner = board.P1 if (board.player_turn) and not board.get_possible_next_moves() else board.P2
+            self.winner = board.P1 if (board.player_turn) and board.get_possible_next_moves() else board.P2
 
         self.current_turn_number += 1
 
