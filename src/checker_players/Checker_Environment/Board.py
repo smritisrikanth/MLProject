@@ -58,7 +58,7 @@ class Board:
 
         possible_moves = self.get_possible_next_moves()
 
-        return not player1_pieces or not player2_pieces or not possible_moves
+        return (not player1_pieces) or (not player2_pieces) or (not possible_moves)
 
     def is_spot(self, loc):
         """
