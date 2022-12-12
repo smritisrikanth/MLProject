@@ -1,7 +1,7 @@
 from checker_players.Players.Player import Player
 from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
 from checker_players.Checker_Environment.Board import Board
-from checker_players.Interpretters.DoubleColumnInterpretter import DoubleColumnInterpretter
+from checker_players.Interpretters.FlatFeaturesInterpretter import FlatFeaturesInterpretter
 
 #from tensorflow import keras
 #from tensorflow.keras import layers as kl
@@ -35,6 +35,7 @@ class DQNPlayer(Player):
     def learn(self, logger_exit, reward, learning_rate = 0.01):
         winner, current_turn_number, board_state_history, _ = logger_exit
         for turn, board in enumerate(board_state_history):
+            board = FlatFeaturesInterpretter.interpret(board)
             y_pred = self.model(board)
             loss = reward[turn-1]
             self.model.zero_grad()
@@ -50,7 +51,6 @@ class DQNPlayer(Player):
             [
                 #we can make the input 32, since half of all pieces are empty
                 nn.Flatten(input_shape=(8, 8)),
-                nn.Linear(64, 32), nn.ReLU(),
                 nn.Linear(32, 16), nn.ReLU(),
                 nn.Linear(16,  8), nn.ReLU(),
                 nn.Linear( 8,  4), nn.ReLU(),

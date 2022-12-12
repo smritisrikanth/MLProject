@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from checker_players.Players.Player import Player
 from checker_players.Checker_Environment.Board import Board
+from checker_players.Interpretters.FlatFeaturesInterpretter import FlatFeaturesInterpretter
 import numpy as np
 import torcheck
 
@@ -9,11 +10,11 @@ class CheckersNet(nn.Module):
     def __init__(self):
         super().__init__()
         # 8*8 is the board size
-        self.fc1 = nn.Linear(64, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 64)
-        self.fc4 = nn.Linear(64, 32)
-        self.fc5 = nn.Linear(32, 1)
+        self.fc1 = nn.Linear(32, 64)
+        self.fc2 = nn.Linear(64, 32)
+        self.fc3 = nn.Linear(32, 32)
+        self.fc4 = nn.Linear(32, 16)
+        self.fc5 = nn.Linear(16, 1)
 
     def forward(self, x):
         x = torch.relu(self.fc1(torch.flatten(x)))
@@ -53,6 +54,7 @@ class MultilayerPerceptron(Player):
     def learn(self, winner, board_states):
         if winner != self.player_number:
             for i, state in enumerate(board_states):
+                state = FlatFeaturesInterpretter.interpret(state)
                 self.mlpEvaluator.train()
                 self.optimizer.zero_grad()
                 self.mlpEvaluator(self.board_state_to_tensor(state))
