@@ -30,6 +30,8 @@ class TrainRunner:
 
     def learn_games(self, num_of_games, turn_cutoff = 100):
         for num_game in range(num_of_games):
+            if num_game % 100 == 0:
+                print(num_game)
             self.board.reset_board()
             self.logger.begin()
             board_states_p1 = []
@@ -45,10 +47,9 @@ class TrainRunner:
                 else:
                     board_states_p2.append(self.board.spots)
                 curr_player = self.player1 if self.board.player_turn else self.player2
-                print(self.board)
                 self.board.make_move(curr_player.play(self.board))
                 self.logger.apply(self.board, self.player1, self.player2)
-            self.logger.end()
+            self.logger.end(self.board, self.player1, self.player2)
             self.player1.learn(winner, board_states_p1)
-            self.player1.learn(winner, board_states_p2)
-        return self.logger.exit()
+            self.player2.learn(winner, board_states_p2)
+        return self.logger.exit(self.board, self.player1, self.player2)

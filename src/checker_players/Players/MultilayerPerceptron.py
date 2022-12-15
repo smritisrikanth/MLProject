@@ -2,26 +2,27 @@ import torch
 import torch.nn as nn
 from checker_players.Players.Player import Player
 from checker_players.Checker_Environment.Board import Board
-from checker_players.Interpretters.FlatFeaturesInterpretter import FlatFeaturesInterpretter
-import numpy as np
-import torcheck
 
 class CheckersNet(nn.Module):
     def __init__(self):
         super().__init__()
         # 8*8 is the board size
-        self.fc1 = nn.Linear(32, 64)
-        self.fc2 = nn.Linear(64, 32)
-        self.fc3 = nn.Linear(32, 32)
-        self.fc4 = nn.Linear(32, 16)
-        self.fc5 = nn.Linear(16, 1)
+        self.fc1 = nn.Linear(64, 128)
+        self.fc2 = nn.Linear(128, 128)
+        self.fc3 = nn.Linear(128, 128)
+        self.fc4 = nn.Linear(128, 128)
+        self.fc5 = nn.Linear(128, 64)
+        self.fc6 = nn.Linear(64, 32)
+        self.fc7 = nn.Linear(32, 1)
 
     def forward(self, x):
         x = torch.relu(self.fc1(torch.flatten(x)))
         x = torch.relu(self.fc2(x))
         x = torch.relu(self.fc3(x))
         x = torch.relu(self.fc4(x))
-        return self.fc5(x)
+        x = torch.relu(self.fc5(x))
+        x = torch.relu(self.fc6(x))
+        return self.fc7(x)
 
 class MultilayerPerceptron(Player):
     mlpEvaluator = CheckersNet()
@@ -34,7 +35,7 @@ class MultilayerPerceptron(Player):
         if self.player_number == self.P1:
             board_state = board_state
         else:
-            board_state = map(lambda row: map(lambda x: -1*x, row),board_state)
+            board_state = [[-1*x for x in row] for row in board_state];
         return torch.tensor([board_state], dtype = torch.float32)
 
         
@@ -54,7 +55,6 @@ class MultilayerPerceptron(Player):
     def learn(self, winner, board_states):
         if winner != self.player_number:
             for i, state in enumerate(board_states):
-                state = FlatFeaturesInterpretter.interpret(state)
                 self.mlpEvaluator.train()
                 self.optimizer.zero_grad()
                 self.mlpEvaluator(self.board_state_to_tensor(state))

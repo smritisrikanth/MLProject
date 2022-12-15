@@ -36,8 +36,8 @@ class SimpleLogger(Logger):
         self.board_time_per_move_history.append(time.process_time() - self.time_at_last_move)
         self.time_at_last_move = time.process_time()
 
-    def end(self):
+    def end(self, board, player1, player2):
         pass
 
-    def exit(self):
+    def exit(self, board, player1, player2):
         return self.winner, self.current_turn_number, self.board_state_history, self.board_time_per_move_history
