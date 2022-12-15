@@ -15,9 +15,8 @@ class TrainRunner:
             board_states = []
             winner = None
             for _ in range(turn_cutoff):
-                if self.board.is_game_over():
-                    # may need to be changed
-                    winner = self.board.P1 if self.board.player_turn else self.board.P2
+                if self.board.is_game_over:
+                    winner = self.board.Current_Winner
                     break
                 if self.board.player_turn:
                     board_states.append(self.board.spots)
@@ -38,9 +37,8 @@ class TrainRunner:
             board_states_p2 = []
             winner = None
             for _ in range(turn_cutoff):
-                if self.board.is_game_over():
-                    # may need to be changed
-                    winner = self.board.P1 if self.board.player_turn else self.board.P2
+                if self.board.game_over:
+                    winner = self.board.Current_Winner
                     break
                 if self.board.player_turn:
                     board_states_p1.append(self.board.spots)

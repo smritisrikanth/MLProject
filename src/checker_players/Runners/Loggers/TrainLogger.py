@@ -9,19 +9,21 @@ def evaluate_against_random_player(player1, player2):
     num_games = 100
     for i in range(num_games):
         board = Board()
-        logger = SimpleLogger()
+        logger = Logger()
         random = RandomPlayer(board.P2)
         runner = TestRunner(board, player1, random, logger)
-        winner, current_turn_number, board_state_history, board_time_per_move_history = runner.play_single_game(1000)
+        runner.play_single_game(1000)
+        winner = board.Current_Winner
         win_rateP1 = win_rateP1 + 1/num_games if winner == board.P1 else win_rateP1
 
     win_rateP2 = 0
     for i in range(num_games):
         board = Board()
-        logger = SimpleLogger()
+        logger = Logger()
         random = RandomPlayer(board.P1)
         runner = TestRunner(board, random, player2, logger)
-        winner, current_turn_number, board_state_history, board_time_per_move_history = runner.play_single_game(1000)
+        runner.play_single_game(1000)
+        winner = board.Current_Winner
         win_rateP2 = win_rateP2 + 1/num_games if winner == board.P2 else win_rateP2
     
     return win_rateP1, win_rateP2

@@ -9,7 +9,7 @@ class TestRunner:
     def play_single_game(self, turn_cutoff = 100):
         self.logger.begin()
         for _ in range(turn_cutoff):
-            if self.board.is_game_over():
+            if self.board.game_over:
                 break
             curr_player = self.player1 if self.board.player_turn else self.player2
             self.board.make_move(curr_player.play(self.board))
@@ -19,9 +19,10 @@ class TestRunner:
 
     def play_games(self, num_of_games, turn_cutoff = 100):
         for num_game in range(num_of_games):
+            self.board.reset()
             self.logger.begin()
             for _ in range(turn_cutoff):
-                if self.board.is_game_over():
+                if self.board.game_over:
                     break
                 curr_player = self.player1 if self.board.player_turn else self.player2
                 self.board.make_move(curr_player.play(self.board))
