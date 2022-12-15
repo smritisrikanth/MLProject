@@ -16,6 +16,9 @@ class Board:
     BACKWARDS_PLAYER = P2
     HEIGHT = 8
     WIDTH = 8
+
+    Current_Winner = 0
+    game_over = False
     
     def __init__(self, board_state=None, P1_turn=True):
         """
@@ -41,6 +44,8 @@ class Board:
         starting position.
         """
         self.spots = Board().spots
+        self.Current_Winner = 0
+        self.game_over = False
         
     def empty_board(self):
         """
@@ -179,6 +184,7 @@ class Board:
         """
         init_loc = move[0]
         final_loc = move[1]
+        current_player = self.P1 if self.player_turn else self.P2
 
         # Here we are just making sure that the right player is moving their piece
         if (self.get_spot_info(init_loc) in (self.P1, self.P1_K) and not self.player_turn) or (self.get_spot_info(init_loc) in (self.P2, self.P2_K) and self.player_turn):
@@ -210,6 +216,10 @@ class Board:
 
         else:
             raise ValueError("Not a legal move.")
+
+        if (self.is_game_over()):
+            self.Current_Winner = current_player
+            self.game_over = True
 
     def get_potential_spots_from_moves(self, moves):
         """

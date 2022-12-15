@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "checker-players"
-version = "1.0.0"
+version = "1.0.2"
 authors = [
   { name="Jacob Lopez", email="jacoblopez757@gmail.com" },
   { name="Hannah Qu", email="hqu6@jhu.edu" },
@@ -13,7 +13,7 @@ authors = [
 ]
 description = "A small platform for playing chess with various built in AI players. Built on PyTorch."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.6"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

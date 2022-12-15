@@ -8,8 +8,8 @@ class Logger:
     def apply(self, board, player1, player2):
         pass
 
-    def end(self):
+    def end(self, board, player1, player2):
         pass
 
-    def exit(self):
+    def exit(self, board, player1, player2):
         pass

@@ -3,6 +3,13 @@ import torch.nn as nn
 from checker_players.Players.Player import Player
 from checker_players.Checker_Environment.Board import Board
 from checker_players.Interpretters.FlatFeaturesInterpretter import FlatFeaturesInterpretter
+
+#from tensorflow import keras
+#from tensorflow.keras import layers as kl
+
+import torch
+import torch.nn as nn
+
 import numpy as np
 import torcheck
 
@@ -39,25 +46,35 @@ class DQNPlayer(Player):
 
         
     def play(self, board):
-        best_move = None
-        best_evaluation = float("-inf")
-
-        for move in board.get_possible_next_moves():
-            new_board = Board(board.spots, P1_turn= board.player_turn)
-            new_board.make_move(move)
-            curr_evaluation = self.mlpEvaluator(self.board_state_to_tensor(new_board.spots))[0]
-            best_move = move if curr_evaluation > best_evaluation else best_move
-            best_evaluation = curr_evaluation if curr_evaluation > best_evaluation else best_evaluation
-
-        return best_move
-
-    def learn(self, winner, board_states):
-        if winner != self.player_number:
-            for i, state in enumerate(board_states):
-                state = FlatFeaturesInterpretter.interpret(state)
-                self.mlpEvaluator.train()
-                self.optimizer.zero_grad()
-                self.mlpEvaluator(self.board_state_to_tensor(state))
-                loss = torch.tensor([1-i/len(board_states)], requires_grad=True)
-                loss.backward()
-                self.optimizer.step()
+        return self.get_best_move(board)
+    
+    
+    def learn(self, logger_exit, reward, learning_rate = 0.01):
+        winner, current_turn_number, board_state_history, _ = logger_exit
+        for turn, board in enumerate(board_state_history):
+            board = FlatFeaturesInterpretter.interpret(board)
+            y_pred = self.model(board)
+            loss = reward[turn-1]
+            self.model.zero_grad()
+            loss.backward()
+            
+            with torch.no_grad():
+                for param in self.model.parameters():
+                    param -= learning_rate * param.grad
+        
+    
+    def create_model(self):
+        model = torch.nn.Sequential(
+            [
+                #we can make the input 32, since half of all pieces are empty
+                nn.Flatten(input_shape=(8, 8)),
+                nn.Linear(32, 16), nn.ReLU(),
+                nn.Linear(16,  8), nn.ReLU(),
+                nn.Linear( 8,  4), nn.ReLU(),
+                nn.Linear( 4,  1)
+            ]
+        )
+        return model
+        
+        
+        
