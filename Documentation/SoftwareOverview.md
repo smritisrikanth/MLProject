@@ -21,7 +21,7 @@ This folder contains python files which extend `class Interpretter`. Intuitively
 This folder contains files which extend `class Player`. Intuitively, the `Player` class is suppose to be our AI checker players and hence all they have to implement is a `play` and `learn` function.
 
 ## src/checker_players/Runners
-TODO: not done writing documentation. However in the meantime, these files should "run" our games. We should be able to run our games, collect metrics, and train our  models.
+These files should "run" our games. We should be able to run our games, collect metrics, and train our models. The TrainRunner is responsible for training our models (similar to the TestRunner, but after a game, the runner provides the model(s) with game data). The TestRunner allows two models to play against each other without learning/training.
 
 ## src/scripts
 This folder is where we include the scripts which do not add to the core functionalities of the library. More specifically, I expect this to mainly be populated with python notebooks which will then be loaded in to google collab when we eventually begin to train our models.
